@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BoomBoom — Doodle Royale | LAN 3D Multiplayer Game</title>
+  <meta name="description" content="A free open-source LAN 3D browser game where player sketches turn into solid walkable magic ink. Battle in Doodle Royale or escape the Doodle Dungeon.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="BoomBoom — Doodle Royale">
+  <meta property="og:description" content="Draw it. Climb it. Survive it. Turn sketches into solid geometry in a 3D browser game.">
+  <meta property="og:image" content="./screenshots/doodle-royale-lobby.png">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="./landing.css">
+</head>
+<body>
+
+  <!-- Header / Navigation -->
+  <header>
+    <div class="container nav-wrap">
+      <a href="#" class="logo-brand">
+        ✏️ BoomBoom <span class="logo-badge">Doodle Royale</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#showcase">Showcase</a></li>
+        <li><a href="#setup">How to Play</a></li>
+        <li><a href="#modes">Modes</a></li>
+        <li><a href="#controls">Controls</a></li>
+        <li>
+          <a href="https://github.com/daksh-mor/boomboom" target="_blank" class="btn-sketch btn-github">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge-wrap">
+        <span class="hero-tag">✨ Draw it. Climb it. Survive it.</span>
+      </div>
+      <h1 class="hero-title">Turn Doodles into Solid 3D Magic Ink</h1>
+      <p class="hero-subtitle">
+        A free, open-source LAN party game for up to 8 players. Draw ramps, cover, or bridges that <span class="highlight">everyone can see and walk on</span> in real time.
+      </p>
+      
+      <div class="hero-actions">
+        <!-- itch.io Redirect Button -->
+        <a href="https://itch.io" target="_blank" id="itch-link" class="btn-sketch btn-primary">
+          🎮 View on itch.io
+        </a>
+        <!-- GitHub Source Link -->
+        <a href="https://github.com/daksh-mor/boomboom" target="_blank" class="btn-sketch btn-github">
+          📦 Open Source Code
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase Section -->
+  <section id="showcase" class="container">
+    <div class="section-head">
+      <h2>Live Gameplay Showcase</h2>
+      <p>Sketches materialize as solid geometry instantly across all connected screens.</p>
+    </div>
+
+    <div class="showcase-grid">
+      <!-- Screenshot 1 -->
+      <div class="sketch-box screenshot-card">
+        <img src="./screenshots/doodle-royale-lobby.png" alt="Multiplayer Lobby">
+        <div class="screenshot-caption">
+          <span>Multiplayer Lobby</span>
+          <span class="screenshot-tag">Up to 8 Players</span>
+        </div>
+      </div>
+
+      <!-- Screenshot 2 -->
+      <div class="sketch-box screenshot-card sketch-border-alt">
+        <img src="./screenshots/pencil-shooter-combat.png" alt="Pencil Shooter Combat">
+        <div class="screenshot-caption">
+          <span>Pencil Shooter Combat</span>
+          <span class="screenshot-tag">Magic Cover</span>
+        </div>
+      </div>
+
+      <!-- Screenshot 3 -->
+      <div class="sketch-box screenshot-card">
+        <img src="./screenshots/doodle-dungeon-escape.png" alt="Doodle Dungeon Escape">
+        <div class="screenshot-caption">
+          <span>Co-op Escape Dungeon</span>
+          <span class="screenshot-tag">Key Recognition</span>
+        </div>
+      </div>
+
+      <!-- Screenshot 4 -->
+      <div class="sketch-box screenshot-card sketch-border-alt">
+        <img src="./screenshots/doodle-royale-round-card.png" alt="Doodle Royale Standings">
+        <div class="screenshot-caption">
+          <span>The Critic Announcer</span>
+          <span class="screenshot-tag">Live Quips</span>
+        </div>
+      </div>
+
+      <!-- Screenshot 5 -->
+      <div class="sketch-box screenshot-card">
+        <img src="./screenshots/doodle-royale-rising-ink.png" alt="Rising Ink Tide">
+        <div class="screenshot-caption">
+          <span>Rising Ink Minigame</span>
+          <span class="screenshot-tag">Climb Fast</span>
+        </div>
+      </div>
+
+      <!-- Screenshot 6 -->
+      <div class="sketch-box screenshot-card sketch-border-alt">
+        <img src="./screenshots/doodle-royale-podium.png" alt="Victory Podium">
+        <div class="screenshot-caption">
+          <span>Victory Podium</span>
+          <span class="screenshot-tag">Save The Art</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Host & Play Section -->
+  <section id="setup" class="setup-section">
+    <div class="container">
+      <div class="section-head">
+        <h2>3-Step LAN Setup & Play</h2>
+        <p>Host on one laptop, then connect phones and tablets over Wi-Fi.</p>
+      </div>
+
+      <div class="setup-steps">
+        <!-- Step 1 -->
+        <div class="sketch-box step-card">
+          <span class="step-num">STEP 1</span>
+          <h3>Start the Host Server</h3>
+          <p>Clone the repository and start the dev server (requires Node.js 20+):</p>
+          <div class="code-box">
+            <code>npm install && npm run dev</code>
+            <button class="copy-btn" data-code="npm install && npm run dev">📋 Copy</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="sketch-box step-card sketch-border-alt">
+          <span class="step-num">STEP 2</span>
+          <h3>Connect Local Devices</h3>
+          <p>Vite prints a <strong>Network URL</strong> (e.g. <code>http://192.168.1.50:5173</code>). Open it on any phone or laptop on the same Wi-Fi.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="sketch-box step-card">
+          <span class="step-num">STEP 3</span>
+          <h3>Join via Room Code</h3>
+          <p>Create a room on the host, share the 4-letter room code, choose a mode, and draw your way to victory!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Modes Section -->
+  <section id="modes" class="container">
+    <div class="section-head">
+      <h2>5 Unique Game Modes</h2>
+      <p>From competitive pencil duels to co-op puzzle escapes.</p>
+    </div>
+
+    <div class="modes-grid">
+      <div class="sketch-box mode-card">
+        <div class="mode-icon">👑</div>
+        <h4>Doodle Royale</h4>
+        <p>5 party rounds: Rising Ink, Draw Duel, and Floor Check.</p>
+      </div>
+
+      <div class="sketch-box mode-card sketch-border-alt">
+        <div class="mode-icon">🗝️</div>
+        <h4>Escape Dungeon</h4>
+        <p>Weapon-free co-op: bridge chasms, weigh plates, draw keys.</p>
+      </div>
+
+      <div class="sketch-box mode-card">
+        <div class="mode-icon">🎯</div>
+        <h4>First to 10</h4>
+        <p>Fast pencil-shooter combat where first to 10 kills wins.</p>
+      </div>
+
+      <div class="sketch-box mode-card sketch-border-alt">
+        <div class="mode-icon">⏱️</div>
+        <h4>Timed 5:00</h4>
+        <p>Highest kill count after 5 frantic minutes takes the game.</p>
+      </div>
+
+      <div class="sketch-box mode-card">
+        <div class="mode-icon">♾️</div>
+        <h4>Endless</h4>
+        <p>Open-ended drawing and combat sandbox free play.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls Quick Ref -->
+  <section id="controls" class="container">
+    <div class="section-head">
+      <h2>Controls Reference</h2>
+      <p>Seamless desktop mouse/keyboard and mobile touch controls.</p>
+    </div>
+
+    <div class="controls-wrap">
+      <div class="sketch-box control-card">
+        <h3>💻 Desktop Controls</h3>
+        <ul class="control-list">
+          <li><span>Move</span> <span class="kbd-badge">W A S D</span></li>
+          <li><span>Look around</span> <span class="kbd-badge">Mouse Move</span></li>
+          <li><span>Fire pencil</span> <span class="kbd-badge">Left Click</span></li>
+          <li><span>Jump / Double Jump</span> <span class="kbd-badge">Space</span></li>
+          <li><span>Draw magic ink</span> <span class="kbd-badge">Q</span></li>
+          <li><span>Erase your drawing</span> <span class="kbd-badge">Hold G</span></li>
+          <li><span>Scoreboard</span> <span class="kbd-badge">Hold Tab</span></li>
+        </ul>
+      </div>
+
+      <div class="sketch-box control-card sketch-border-alt">
+        <h3>📱 Mobile Touch Controls</h3>
+        <ul class="control-list">
+          <li><span>Move joystick</span> <span class="kbd-badge">Left Joystick</span></li>
+          <li><span>Look / Aim</span> <span class="kbd-badge">Right Drag</span></li>
+          <li><span>On-screen Fire</span> <span class="kbd-badge">FIRE Button</span></li>
+          <li><span>Draw overlay</span> <span class="kbd-badge">DRAW Button</span></li>
+          <li><span>Cast sketch</span> <span class="kbd-badge">CAST Button</span></li>
+          <li><span>Erase ink</span> <span class="kbd-badge">ERASE Button</span></li>
+          <li><span>Toggle scores</span> <span class="kbd-badge">Tap Room Code</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://github.com/daksh-mor/boomboom" target="_blank">GitHub Repository</a>
+        <a href="https://itch.io" target="_blank">itch.io Page</a>
+        <a href="https://github.com/daksh-mor/boomboom/blob/main/LICENSE" target="_blank">MIT License</a>
+      </div>
+      <p>© 2026 Daksh Mor. Open source under the MIT License.</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="lightbox">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" class="lightbox-content" src="" alt="Full Preview">
+  </div>
+
+  <script src="./landing.js"></script>
+</body>
+</html>

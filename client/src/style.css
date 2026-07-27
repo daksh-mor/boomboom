@@ -1,0 +1,1709 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Classes that set display would beat the UA [hidden] rule; force the
+   attribute to always win. */
+[hidden] {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------- tokens */
+
+:root {
+  --bg: #0a0e15;
+  --bg-2: #0d1420;
+  --panel: #121a27;
+  --panel-2: #172233;
+  --line: #263447;
+  --line-bright: #3b5069;
+  --text: #e9f1f9;
+  --muted: #7d8fa4;
+  --accent: #00e5ff;
+  --accent-soft: rgba(0, 229, 255, 0.12);
+  --accent-glow: rgba(0, 229, 255, 0.4);
+  --danger: #ff4655;
+  --danger-soft: rgba(255, 70, 85, 0.14);
+  --font: 'Rajdhani', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Cut-corner shapes (top-left + bottom-right). */
+  --clip-panel: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+  --clip-btn: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  --clip-chip: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  --clip-oct: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 500;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  height: 100dvh;
+  background-image:
+    radial-gradient(ellipse at 50% 35%, rgba(0, 229, 255, 0.045), transparent 62%),
+    linear-gradient(rgba(38, 52, 71, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(38, 52, 71, 0.22) 1px, transparent 1px),
+    radial-gradient(ellipse at center, var(--bg-2) 0%, var(--bg) 75%);
+  background-size: auto, 34px 34px, 34px 34px, auto;
+}
+
+#game-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  display: block;
+  visibility: hidden;
+}
+
+#ui-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+body.in-game #game-canvas {
+  visibility: visible;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------- angular surface system
+   Cut-corner shapes with a thin border that follows the diagonals:
+   the element's own background is the 1px "border" layer, and ::before
+   (inset 1px, z-index -1) paints the fill on top of it. */
+
+.panel,
+.chip,
+.btn,
+.hud-btn,
+.mode-btn {
+  position: relative;
+  isolation: isolate;
+}
+
+.panel::before,
+.chip::before,
+.btn::before,
+.hud-btn::before,
+.mode-btn::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+}
+
+.panel {
+  background: var(--line);
+  clip-path: var(--clip-panel);
+}
+
+.panel::before {
+  background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
+  clip-path: var(--clip-panel);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(59, 80, 105, 0.85);
+  clip-path: var(--clip-chip);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.chip::before {
+  background: rgba(9, 13, 20, 0.78);
+  clip-path: var(--clip-chip);
+}
+
+/* ------------------------------------------------------------- type */
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--line-bright);
+  clip-path: var(--clip-btn);
+  transition: transform 0.06s, filter 0.06s;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn::before {
+  background: var(--panel);
+  clip-path: var(--clip-btn);
+  transition: background 0.12s;
+}
+
+.btn:active {
+  transform: translateY(2px);
+}
+
+.btn:focus-visible {
+  outline: none;
+  background: var(--accent);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #04252b;
+  text-shadow: none;
+}
+
+.btn-primary::before {
+  background: linear-gradient(180deg, #2ceaff 0%, #00cbe4 100%);
+}
+
+.btn-primary:hover::before {
+  background: linear-gradient(180deg, #55efff 0%, #10d6ee 100%);
+}
+
+.btn-primary:focus-visible {
+  background: #eafcff;
+}
+
+.btn-secondary {
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--accent);
+  color: var(--accent);
+}
+
+.btn-secondary:hover::before {
+  background: var(--panel-2);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.btn-ghost::before {
+  background: transparent;
+}
+
+.btn-ghost:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.btn-ghost:focus-visible {
+  background: var(--danger);
+  color: var(--danger);
+}
+
+.btn-ghost:focus-visible::before {
+  background: var(--bg-2);
+}
+
+/* ------------------------------------------------------------- inputs */
+
+.text-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0.7rem 1rem;
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  background: #080c12;
+  border: 1px solid var(--line);
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.text-input::placeholder {
+  color: #45536a;
+}
+
+.text-input:focus-visible {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent), 0 0 14px rgba(0, 229, 255, 0.18);
+}
+
+.code-input {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 0.4em;
+  font-variant-numeric: tabular-nums;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 16px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ------------------------------------------------------------- screens */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+    calc(20px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
+
+.card {
+  width: min(430px, 100%);
+  padding: 30px 28px;
+  margin: auto 0;
+}
+
+/* ------------------------------------------------------------- landing */
+
+.logo {
+  font-size: clamp(2rem, 8vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.logo-accent {
+  color: var(--accent);
+  text-shadow: 0 0 18px var(--accent-glow);
+}
+
+.tagline {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 26px;
+  line-height: 1.5;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.field-error {
+  min-height: 1.2em;
+  margin: 6px 2px 10px;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--danger);
+}
+
+.join-row {
+  display: flex;
+  gap: 10px;
+}
+
+.join-row .btn {
+  width: auto;
+  flex: 0 0 auto;
+  padding-inline: 1.5rem;
+}
+
+/* ------------------------------------------------------------- lobby */
+
+.share-label {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* The room code is the hero of the lobby — unmissable. */
+.room-code {
+  text-align: center;
+  font-size: clamp(3rem, 15vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em; /* visually re-center the tracked text */
+  color: var(--accent);
+  text-shadow: 0 0 28px var(--accent-glow), 0 0 3px rgba(0, 229, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 22px;
+}
+
+.lobby-players-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.player-count {
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+  max-height: 264px;
+  overflow-y: auto;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-bright);
+}
+
+.player-dot {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  transform: rotate(45deg);
+  border: 1px solid rgba(0, 0, 0, 0.45);
+}
+
+.player-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  text-transform: uppercase;
+}
+
+.player-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.player-tag-host {
+  color: var(--accent);
+}
+
+.lobby-actions {
+  margin-bottom: 8px;
+}
+
+/* Host-only match mode selector. */
+.mode-select {
+  margin-bottom: 16px;
+}
+
+.mode-label {
+  margin-bottom: 8px;
+}
+
+.mode-row {
+  display: flex;
+  flex-wrap: wrap; /* five modes wrap 3+2 on phones */
+  gap: 6px;
+}
+
+.mode-btn {
+  flex: 1 1 30%;
+  min-height: 48px;
+  padding: 6px 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--line);
+  clip-path: var(--clip-chip);
+  transition: color 0.12s;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mode-btn::before {
+  background: var(--bg-2);
+  clip-path: var(--clip-chip);
+  transition: background 0.12s;
+}
+
+.mode-btn:hover {
+  color: var(--text);
+}
+
+.mode-btn:focus-visible {
+  outline: none;
+  background: var(--accent);
+  color: var(--text);
+}
+
+.mode-btn:active {
+  transform: translateY(1px);
+}
+
+.mode-btn.mode-active {
+  color: var(--accent);
+  background: var(--accent);
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+
+.mode-btn.mode-active::before {
+  /* Opaque dark base under the cyan tint — the element's cyan background is
+     the 1px border layer and must not bleed through the fill (it would make
+     the cyan label unreadable). */
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.16), rgba(0, 229, 255, 0.05)), var(--bg-2);
+}
+
+.waiting-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  animation: pulse 1.2s step-end infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* ------------------------------------------------------------- HUD */
+
+.screen-hud {
+  padding: 0;
+  pointer-events: none;
+  background: none;
+  display: block;
+  overflow: hidden;
+}
+
+.hud-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 0
+    calc(12px + env(safe-area-inset-left));
+}
+
+.hud-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+/* Room badge: big, high-contrast code; doubles as scoreboard toggle on touch. */
+.hud-badge {
+  pointer-events: auto;
+  align-items: baseline;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.hud-badge:focus-visible {
+  outline: none;
+  background: var(--accent);
+}
+
+.hud-code {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  text-shadow: 0 0 14px var(--accent-glow);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Match timer / kill-target progress, top center. */
+.hud-timer {
+  position: absolute;
+  left: 50%;
+  top: calc(10px + env(safe-area-inset-top));
+  transform: translateX(-50%);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.hud-perf {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: rgba(59, 80, 105, 0.85);
+  clip-path: var(--clip-chip);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hud-btn::before {
+  background: rgba(9, 13, 20, 0.78);
+  clip-path: var(--clip-chip);
+}
+
+.hud-btn:active {
+  transform: translateY(1px);
+}
+
+.hud-btn:focus-visible {
+  outline: none;
+  background: var(--accent);
+}
+
+.hud-leave {
+  color: var(--danger);
+  background: rgba(255, 70, 85, 0.55);
+}
+
+.hud-fullscreen {
+  color: var(--accent);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.hud-fullscreen-active::before {
+  background: rgba(0, 229, 255, 0.16);
+}
+
+/* --- crosshair + hit marker */
+
+.crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+
+.crosshair::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: -11px;
+  width: 2px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 15px 0 rgba(255, 255, 255, 0.92);
+}
+
+.crosshair::after {
+  content: '';
+  position: absolute;
+  left: -11px;
+  top: -1px;
+  width: 7px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 15px 0 0 rgba(255, 255, 255, 0.92);
+}
+
+.hit-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+.hit-marker::before,
+.hit-marker::after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: -1.5px;
+  width: 20px;
+  height: 3px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.hit-marker::before {
+  transform: rotate(45deg);
+}
+
+.hit-marker::after {
+  transform: rotate(-45deg);
+}
+
+.hit-marker.hit-show {
+  opacity: 1;
+}
+
+/* --- damage vignette */
+
+.damage-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, transparent 52%, rgba(255, 70, 85, 0.55) 100%);
+}
+
+/* --- lock hint */
+
+.lock-hint {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+@media (pointer: coarse) {
+  .crosshair,
+  .lock-hint {
+    display: none !important;
+  }
+}
+
+/* --- bottom-left: K/D + health bar */
+
+.hud-bl {
+  position: absolute;
+  left: calc(16px + env(safe-area-inset-left));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.hud-kd {
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.health-bar {
+  width: min(300px, 36vw);
+  height: 16px;
+  background: rgba(8, 12, 19, 0.72);
+  border: 1px solid var(--line-bright);
+  clip-path: var(--clip-chip);
+  overflow: hidden;
+}
+
+.health-fill {
+  width: 100%;
+  height: 100%;
+  background: hsl(120, 85%, 52%);
+  transition: width 0.22s ease-out, background 0.22s linear;
+}
+
+/* --- bottom-right: ammo */
+
+.hud-ammo {
+  position: absolute;
+  right: calc(18px + env(safe-area-inset-right));
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  text-align: right;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ammo-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.ammo-mag {
+  font-size: clamp(2.3rem, 6vh, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ammo-mag.ammo-low {
+  color: var(--danger);
+  text-shadow: 0 0 16px rgba(255, 70, 85, 0.6);
+}
+
+.ammo-cap {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.reload-bar {
+  position: relative;
+  width: 150px;
+  height: 8px;
+  margin-top: 26px; /* leaves room for the RELOADING label above the bar */
+  margin-left: auto;
+  background: rgba(8, 12, 19, 0.72);
+  border: 1px solid var(--line-bright);
+}
+
+.reload-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.reload-label {
+  position: absolute;
+  right: 0;
+  top: -18px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: var(--accent);
+}
+
+/* --- kill feed */
+
+.kill-feed {
+  position: absolute;
+  top: calc(64px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.kill-entry {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: feed-in 0.18s ease-out;
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+}
+
+.kill-entry.kill-out {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.kill-glyph {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+@keyframes feed-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- death overlay */
+
+.death-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(40, 8, 14, 0.3) 0%, rgba(10, 3, 6, 0.82) 100%);
+}
+
+.death-inner {
+  text-align: center;
+  padding: 0 16px;
+}
+
+.death-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  color: rgba(255, 174, 182, 0.85);
+  margin-bottom: 6px;
+}
+
+.death-killer {
+  font-size: clamp(1.8rem, 7vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--danger);
+  text-shadow: 0 0 26px rgba(255, 70, 85, 0.55);
+}
+
+.death-count {
+  margin-top: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- scoreboard */
+
+.scoreboard {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(5, 8, 13, 0.6);
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+.scoreboard-panel {
+  width: min(460px, 94vw);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 22px 24px;
+}
+
+.scoreboard-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-indent: 0.26em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 18px var(--accent-glow);
+}
+
+.scoreboard-sub {
+  text-align: center;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreboard-head {
+  display: grid;
+  grid-template-columns: 1fr 48px 48px;
+  gap: 8px;
+  padding: 14px 8px 6px 34px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.scoreboard-head span:not(:first-child) {
+  text-align: center;
+}
+
+.scoreboard-rows {
+  list-style: none;
+}
+
+.sb-row {
+  display: grid;
+  grid-template-columns: 14px 1fr 48px 48px;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 8px;
+  border-bottom: 1px solid rgba(38, 52, 71, 0.55);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.sb-row.sb-self {
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.sb-dot {
+  width: 11px;
+  height: 11px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(0, 0, 0, 0.45);
+}
+
+.sb-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.sb-kills,
+.sb-deaths {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-kills {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sb-deaths {
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------- touch controls */
+
+.touch-layer,
+.touch-controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  touch-action: none;
+}
+
+.joystick-base {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -50%);
+  display: none;
+  clip-path: var(--clip-oct);
+  background: rgba(9, 13, 20, 0.45);
+  box-shadow: inset 0 0 0 2px rgba(59, 80, 105, 0.7);
+}
+
+.joystick-base.joystick-active {
+  display: block;
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  clip-path: var(--clip-oct);
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+}
+
+/* Shared shape for the three action buttons. */
+.jump-btn,
+.fire-btn,
+.reload-btn {
+  position: absolute;
+  pointer-events: auto;
+  clip-path: var(--clip-oct);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.jump-btn {
+  right: calc(22px + env(safe-area-inset-right));
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  width: 84px;
+  height: 84px;
+  background: rgba(0, 229, 255, 0.2);
+  box-shadow: inset 0 0 0 2px rgba(0, 229, 255, 0.55);
+}
+
+/* Chevron-up icon (the button is icon-only, labelled via aria-label). */
+.jump-btn::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  border-top: 5px solid var(--accent);
+  border-right: 5px solid var(--accent);
+  transform: translate(-50%, -15%) rotate(-45deg);
+}
+
+.jump-btn.jump-pressed {
+  background: rgba(0, 229, 255, 0.42);
+  transform: scale(0.94);
+}
+
+/* Large FIRE button above the jump button. */
+.fire-btn {
+  right: calc(16px + env(safe-area-inset-right));
+  bottom: calc(188px + env(safe-area-inset-bottom));
+  width: 96px;
+  height: 96px;
+  background: rgba(255, 70, 85, 0.24);
+  box-shadow: inset 0 0 0 2px rgba(255, 70, 85, 0.65);
+}
+
+/* Crosshair icon: ring + center dot. */
+.fire-btn::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--danger);
+  border-radius: 50%;
+}
+
+.fire-btn::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  background: var(--danger);
+  border-radius: 50%;
+}
+
+.fire-btn.fire-pressed {
+  background: rgba(255, 70, 85, 0.5);
+  transform: scale(0.94);
+}
+
+/* Small RELOAD button beside JUMP, directly above the ammo counter. */
+.reload-btn {
+  right: calc(126px + env(safe-area-inset-right));
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  background: rgba(9, 13, 20, 0.62);
+  box-shadow: inset 0 0 0 2px rgba(59, 80, 105, 0.8);
+}
+
+.reload-btn.reload-pressed {
+  background: rgba(0, 229, 255, 0.28);
+  transform: scale(0.92);
+}
+
+/* Coarse pointers: shift the ammo block left of the button cluster. */
+@media (pointer: coarse) {
+  .hud-ammo {
+    right: calc(196px + env(safe-area-inset-right));
+    bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .ammo-mag {
+    font-size: 2rem;
+  }
+
+  .hud-bl {
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .health-bar {
+    width: min(240px, 30vw);
+  }
+}
+
+/* ------------------------------------------------------------- magic ink */
+
+/* Bottom-left ink meter (sits between the K/D chip and the health bar). */
+.ink-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.ink-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+.ink-bar {
+  width: min(200px, 26vw);
+  height: 8px;
+  background: rgba(9, 13, 20, 0.72);
+  box-shadow: inset 0 0 0 1px var(--line-bright);
+  clip-path: var(--clip-chip);
+  overflow: hidden;
+}
+
+.ink-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  transition: width 0.15s linear;
+}
+
+.ink-fill.ink-low {
+  background: var(--danger);
+}
+
+.ink-value {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 46px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Escape objective line, under the top-center timer. */
+.hud-objective {
+  position: absolute;
+  left: 50%;
+  top: calc(58px + env(safe-area-inset-top));
+  transform: translateX(-50%);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  white-space: nowrap;
+  max-width: 92vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Escape mode: no shooting or damage — hide the combat chrome. */
+.hud-escape .hud-ammo,
+.hud-escape .hud-kd,
+.hud-escape .health-bar {
+  display: none !important;
+}
+
+/* --- sketch mode overlay */
+
+.sketch-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sketch-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sketch-capture {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+body.sketching .crosshair,
+body.sketching .lock-hint,
+body.sketching .touch-controls {
+  display: none !important;
+}
+
+.sketch-top {
+  position: absolute;
+  top: calc(58px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.sketch-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+
+.sketch-title-key {
+  color: #ffd75e;
+}
+
+.sketch-cost {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sketch-cost-over {
+  color: var(--danger);
+}
+
+.sketch-actions {
+  position: absolute;
+  right: calc(16px + env(safe-area-inset-right));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.sketch-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  min-width: 92px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  background: rgba(59, 80, 105, 0.9);
+  clip-path: var(--clip-btn);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sketch-btn::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: rgba(9, 13, 20, 0.85);
+  clip-path: var(--clip-btn);
+}
+
+.sketch-btn:active {
+  transform: translateY(1px);
+}
+
+.sketch-btn-cast {
+  color: #06232a;
+  background: var(--accent);
+}
+
+.sketch-btn-cast::before {
+  background: var(--accent);
+}
+
+/* Desktop key hints on the sketch buttons. */
+@media (pointer: fine) {
+  [data-sketch-cast]::after {
+    content: '  ⏎';
+  }
+  [data-sketch-cancel]::after {
+    content: '  ESC';
+    font-size: 0.7em;
+  }
+  [data-sketch-undo]::after {
+    content: '  ⌫';
+  }
+}
+
+/* --- DRAW + ERASE touch buttons (left side, clear of the joystick's usual arc) */
+
+.draw-btn,
+.erase-btn {
+  position: absolute;
+  pointer-events: auto;
+  clip-path: var(--clip-oct);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.draw-btn {
+  left: calc(20px + env(safe-area-inset-left));
+  bottom: calc(188px + env(safe-area-inset-bottom));
+  width: 76px;
+  height: 76px;
+  font-size: 1.7rem;
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(0, 229, 255, 0.55);
+}
+
+.erase-btn {
+  left: calc(30px + env(safe-area-inset-left));
+  bottom: calc(120px + env(safe-area-inset-bottom));
+  width: 56px;
+  height: 56px;
+  font-size: 1.2rem;
+  color: var(--muted);
+  background: rgba(9, 13, 20, 0.62);
+  box-shadow: inset 0 0 0 2px rgba(59, 80, 105, 0.8);
+}
+
+.erase-btn.erase-pressed {
+  background: rgba(255, 70, 85, 0.32);
+  color: var(--danger);
+  transform: scale(0.92);
+}
+
+/* Lobby mode hint badge (e.g. CO-OP on Escape Room). */
+.mode-hint {
+  margin-left: 6px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------- party mode */
+
+/* Party scores points, not kills — soften the combat framing. */
+.hud-party .death-overlay {
+  background: radial-gradient(ellipse at center, rgba(30, 6, 14, 0.12) 0%, rgba(8, 3, 6, 0.5) 100%);
+}
+
+/* Floor-check klaxon: big top-center pulse, auto-cleared by the HUD tick. */
+.hud-klaxon {
+  position: absolute;
+  left: 50%;
+  top: calc(22% + env(safe-area-inset-top));
+  transform: translateX(-50%);
+  font-size: clamp(1.5rem, 5.5vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--danger);
+  text-shadow: 0 0 26px rgba(255, 70, 85, 0.75), 0 0 4px rgba(255, 70, 85, 0.9);
+}
+
+.hud-klaxon.klaxon-flash {
+  animation: klaxon-pulse 0.9s ease-out;
+}
+
+@keyframes klaxon-pulse {
+  0% {
+    transform: translateX(-50%) scale(1.35);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.9;
+  }
+}
+
+/* The Critic's quips share the kill-feed lane but read like wall labels. */
+.quip-entry {
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  text-align: right;
+  color: var(--accent);
+  max-width: min(74vw, 400px);
+}
+
+.quip-entry::before {
+  content: '“';
+  opacity: 0.65;
+  margin-right: 2px;
+}
+
+.quip-entry::after {
+  content: '”';
+  opacity: 0.65;
+  margin-left: 2px;
+}
+
+/* Announcer line on the intermission round card. */
+.scoreboard-announcer {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 0.92rem;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+/* Podium: SAVE THE ART (the scoreboard layer is pointer-events: none). */
+.podium-save {
+  margin-top: 16px;
+  pointer-events: auto;
+}
+
+/* Podium orbit: cinematic frame — no combat chrome over the wreckage. */
+.hud-podium .crosshair,
+.hud-podium .lock-hint,
+.hud-podium .hud-ammo,
+.hud-podium .hud-bl,
+.hud-podium .hud-objective,
+.hud-podium .kill-feed,
+.hud-podium .hud-klaxon,
+.hud-podium .touch-controls {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------- rotate overlay */
+
+.rotate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 11, 17, 0.95);
+  padding: calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+    calc(20px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
+
+.rotate-card {
+  width: min(360px, 100%);
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.rotate-icon {
+  font-size: 3rem;
+  margin-bottom: 14px;
+  color: var(--accent);
+  text-shadow: 0 0 22px var(--accent-glow);
+  animation: rotate-hint 2s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(90deg); }
+}
+
+.rotate-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.rotate-copy {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* ------------------------------------------------------------- toasts */
+
+.toast-container {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+  width: min(92vw, 440px);
+}
+
+.toast {
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  max-width: 100%;
+  color: var(--text);
+  background: rgba(18, 24, 36, 0.96);
+  border: 1px solid var(--line-bright);
+  border-left: 3px solid var(--danger);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* -------------------------------------------------- landscape short height */
+
+@media (max-height: 480px) {
+  .card {
+    padding: 18px 20px;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .tagline {
+    margin-bottom: 14px;
+    font-size: 0.8rem;
+  }
+
+  .room-code {
+    font-size: clamp(2.2rem, 9vh, 3rem);
+    margin-bottom: 12px;
+  }
+
+  .player-list {
+    max-height: 108px;
+  }
+
+  .mode-btn {
+    min-height: 44px;
+    font-size: 0.7rem;
+  }
+
+  .scoreboard-panel {
+    padding: 14px 16px;
+  }
+
+  .scoreboard-title {
+    font-size: 1.1rem;
+  }
+
+  .fire-btn {
+    bottom: calc(180px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ------------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .rotate-icon,
+  .pulse-dot,
+  .hud-klaxon.klaxon-flash {
+    animation: none;
+  }
+
+  .kill-entry {
+    animation: none;
+    transition: opacity 0.35s ease-out;
+  }
+
+  .kill-entry.kill-out {
+    transform: none;
+  }
+
+  .health-fill {
+    transition: none;
+  }
+}
